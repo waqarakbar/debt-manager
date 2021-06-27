@@ -1,0 +1,52 @@
+{% extends 'debts/base.html' %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-12">
+
+            {% for debtor in debtors %}
+            <div class="debtor">
+                <div class="row">
+                    <div class="col-7">
+                        <h6 class="mb-0">
+                            <a href="{% url 'user-transaction' debtor.username %}">
+                                {{ debtor.first_name}} {{ debtor.last_name }} <br>
+                                <small class="text-muted text-small">@{{ debtor.username }}</small>
+                            </a>
+                        </h6>
+                        <span class="text-small text-muted">
+                            <strong>Total lent / Received:</strong> <span class="text-danger"> -{{ debtor.total_lent|default_if_none:"0" }} PKR</span> / <span class="text-success"> +{{ debtor.total_received|default_if_none:"0" }} PKR</span>
+                        </span>
+                    </div>
+
+                    <div class="col-5 text-right">
+
+                        {% if debtor.total_balance > 0 %}
+                            <h5 class="text-success">+{{ debtor.total_balance }} PKR</h5>
+                        {% elif debtor.total_balance < 0 %}
+                            <h5 class="text-danger">{{ debtor.total_balance }} PKR</h5>
+                        {% else %}
+                            <h5 class="text-success">0 PKR</h5>
+                        {% endif %}
+
+
+                        <a href="#" class="text-danger btn btn-sm btn-outline-danger">
+                            <small><i class="fa fa-plus"></i> New</small>
+                        </a>
+
+                        <a href="{% url 'user-transaction' debtor.username %}" class="text-info btn btn-sm btn-outline-info">
+                            <small><i class="fa fa-list-ol"></i> Details</small>
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+
+        </div>
+    </div>
+
+
+{% endblock %}

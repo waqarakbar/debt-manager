@@ -1,0 +1,46 @@
+{% extends 'debts/base.html' %}
+
+{% block content %}
+
+{#    {{ transactions.values }}#}
+    <div class="row">
+        <div class="col-12">
+
+            {% if user.is_superuser %}
+                <div class="text-small- text-muted mb-2">
+                    <a href="{% url 'home' %}">Home</a> /
+                    <span>{{ current_user.first_name }} {{ current_user.last_name }} (@{{ current_user.username }})</span>
+                </div>
+            {% endif %}
+
+            {% for trns in transactions %}
+            <div class="debtor">
+                <div class="row">
+                    <div class="col-7">
+
+                        {% if trns.transaction_type_id == 1 %}
+                            <h5 class="text-success">+{{ trns.amount }}</h5>
+                        {% else %}
+                            <h5 class="text-danger">-{{ trns.amount }}</h5>
+                        {% endif %}
+
+                        <span class="text-small text-muted">
+                            {{ trns.remarks }}
+                        </span>
+                    </div>
+
+                    <div class="col-5 text-right">
+
+                        {{ trns.transaction_date }}
+
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+
+        </div>
+    </div>
+
+
+{% endblock %}

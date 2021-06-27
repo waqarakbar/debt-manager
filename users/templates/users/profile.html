@@ -1,0 +1,39 @@
+{% extends 'debts/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-12">
+
+            <div class="text-small- text-muted mb-2">
+                <a href="{% url 'home' %}">Home</a> /
+                <span>Update Profile</span>
+            </div>
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                {{ form|crispy }}
+
+
+                <hr>
+
+                <a href="{% url 'home' %}" class="btn btn-warning text-white">
+                    <i class="fa fa-arrow-left"></i>Cancel
+                </a>
+
+                <button class="btn btn-info text-white" type="submit">
+                    <i class="fa fa-save"></i> Save Member
+                </button>
+
+            </form>
+
+
+
+        </div>
+    </div>
+
+
+{% endblock %}
