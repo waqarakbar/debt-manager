@@ -4,6 +4,7 @@ from django.contrib.auth.models import User, Group
 from django.db.models import Sum, Q, FloatField
 from django.db.models.functions import Coalesce
 from django.contrib.auth.decorators import login_required, user_passes_test
+from .forms import TransactionCreationForm
 
 
 # check if a given user is super_user
@@ -92,6 +93,23 @@ def user_transactions(request, username):
 
 
 def new_transaction(request, username=None):
-    
-    return render(request, 'debts/new_transaction.html')
+
+    form = TransactionCreationForm()
+
+    if username is None:
+        # get all the debtors for group transaction
+        debtor_group = Group.objects.get(pk=1)
+        debtors = debtor_group.user_set.all()
+        transaction_type = 'group'
+    else:
+        # single user transaction
+        debtors = User.objects.filter(username=username).first()
+        transaction_type = 'single'
+
+    context = {
+        'debtors': debtors,
+        'transaction_type': transaction_type,
+        'form': form
+    }
+    return render(request, 'debts/new_transaction.html', context)
 

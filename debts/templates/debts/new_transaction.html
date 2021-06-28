@@ -8,21 +8,52 @@
 
             <div class="text-small- text-muted mb-2">
                 <a href="{% url 'home' %}">Home</a> /
-                <span>New Transaction</span>
+                <span>
+                    New Transaction
+                    {% if transaction_type == 'single' %} "@{{ debtors.username }}" {% else %} "Group" {% endif %}
+                </span>
             </div>
 
             <form method="POST">
 
                 {% csrf_token %}
 
+                <input type="hidden" name="transaction_type" value="{{ transaction_type }}">
+
+                {{ form|crispy }}
 
 
+                {% if transaction_type == 'single' %}
 
+                    <div id="div_id_remarks" class="form-group">
+                        <label for="id_remarks" class=" requiredField">
+                            Transaction against <strong><u>{{ debtors.first_name}} {{ debtors.last_name }} (@{{ debtors.username }})</u></strong>
+                        </label>
+                        <input type="hidden" name="debtor_id" value="{{ debtors.id }}">
+                    </div>
 
+                {% else %}
+
+                    <div id="div_id_remarks" class="form-group">
+                        <label for="id_remarks" class=" requiredField">
+                            Select Users <span class="asteriskField">*</span>
+                        </label>
+                        <div class="">
+
+                            <select name="debtor_id" id="debtor_id" class="form-control select2" required multiple>
+                                {% for debtor in debtors %}
+                                    <option value="{{ debtor.id }}">{{ debtor.first_name }} {{ debtor.last_name }} @{{ debtor.username }}</option>
+                                {% endfor %}
+                            </select>
+
+                        </div>
+                    </div>
+
+                {% endif %}
                 <hr>
 
                 <a href="{% url 'home' %}" class="btn btn-warning text-white">
-                    <i class="fa fa-arrow-left"></i>Cancel
+                    <i class="fa fa-arrow-left"></i> Cancel
                 </a>
 
                 <button class="btn btn-info text-white" type="submit">
