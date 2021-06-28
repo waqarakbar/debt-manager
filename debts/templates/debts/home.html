@@ -31,7 +31,7 @@
                         {% endif %}
 
 
-                        <a href="#" class="text-danger btn btn-sm btn-outline-danger">
+                        <a href="{% url 'new-transaction' username=debtor.username %}" class="text-danger btn btn-sm btn-outline-danger">
                             <small><i class="fa fa-plus"></i> New</small>
                         </a>
 

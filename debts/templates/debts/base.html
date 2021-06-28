@@ -91,9 +91,9 @@
 
         {% if user.is_superuser and request.resolver_match.url_name == 'home' %}
         <div class="footer">
-            <button class="btn btn-sm btn-info text-white">
+            <a href="{% url 'new-transaction' %}" class="btn btn-sm btn-info text-white">
                 <i class="fa fa-list"></i> Group Transaction
-            </button>
+            </a>
             <a href="{% url 'user-register' %}" class="btn btn-sm btn-warning text-white">
                 <i class="fa fa-user"></i> New Member
             </a>

@@ -90,3 +90,8 @@ def user_transactions(request, username):
 
     return render(request, 'debts/my_transactions.html', context)
 
+
+def new_transaction(request, username=None):
+    
+    return render(request, 'debts/new_transaction.html')
+
