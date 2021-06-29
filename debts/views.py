@@ -1,10 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Transaction
 from django.contrib.auth.models import User, Group
 from django.db.models import Sum, Q, FloatField
 from django.db.models.functions import Coalesce
 from django.contrib.auth.decorators import login_required, user_passes_test
-from .forms import TransactionCreationForm
+from .forms import TransactionModalForm
+from django.contrib import messages
 
 
 # check if a given user is super_user
@@ -60,7 +61,8 @@ def my_transactions(request):
 
     context = {
         'transactions': user_transactions,
-        'overall_summary' : overall_summary
+        'overall_summary' : overall_summary,
+        'current_user': user
     }
 
     return render(request, 'debts/my_transactions.html', context)
@@ -92,24 +94,60 @@ def user_transactions(request, username):
     return render(request, 'debts/my_transactions.html', context)
 
 
-def new_transaction(request, username=None):
+@login_required
+@user_passes_test(_super_user_test, login_url='my-transactions/')
+def transaction_processor(request, username=None, transaction_id=None):
 
-    form = TransactionCreationForm()
+    # if we are on edit transaction
+    if transaction_id is not None:
+        trx = get_object_or_404(Transaction, pk=transaction_id)
+    else:
+        trx = Transaction()
 
+    form = TransactionModalForm(request.POST or None, instance=trx)
+    
     if username is None:
         # get all the debtors for group transaction
         debtor_group = Group.objects.get(pk=1)
         debtors = debtor_group.user_set.all()
-        transaction_type = 'group'
+        transaction_mode = 'group'
     else:
         # single user transaction
         debtors = User.objects.filter(username=username).first()
-        transaction_type = 'single'
+        transaction_mode = 'single'
+
+    if request.method == 'POST':
+        # form = TransactionModalForm(request.POST)
+        if form.is_valid():
+
+            if request.POST.get('transaction_mode') == 'group':
+                selected_debtors = request.POST.getlist('debtor_id')
+                print(selected_debtors)
+                total_amount = request.POST.get('amount')
+                per_head = float(total_amount) / len(selected_debtors)
+
+                for debtor in selected_debtors:
+                    print(debtor)
+                    trx = form.save(commit=False)
+                    trx.pk = None
+                    trx.entered_by = request.user
+                    trx.debtor_id = debtor
+                    trx.amount = per_head
+                    trx.save()
+
+            else:
+                trx = form.save(commit=False)
+                trx.entered_by = request.user
+                trx.debtor_id = request.POST.get('debtor_id')
+                trx.save()
+
+            messages.success(request, 'Transaction saved successfully')
+            return redirect('home')
 
     context = {
         'debtors': debtors,
-        'transaction_type': transaction_type,
+        'transaction_mode': transaction_mode,
         'form': form
     }
-    return render(request, 'debts/new_transaction.html', context)
 
+    return render(request, 'debts/transaction_form.html', context)

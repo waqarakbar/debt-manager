@@ -60,12 +60,12 @@
             <div class="row">
                 <div class="col-12">
 
-                    (<span class="text-danger">Total Lent: {{ overall_summary.grand_total_lent }} PKR</span> -
-                    <span class="text-success">Total Recovered: {{ overall_summary.grand_total_received }} PKR</span>) =
+                    (<span class="text-success">Total Lent: {{ overall_summary.grand_total_lent|floatformat:2 }} PKR</span> -
+                    <span class="text-danger">Total Recovered: {{ overall_summary.grand_total_received|floatformat:2 }} PKR</span>) =
                     {% if overall_summary.grand_total_balance > 0 %}
-                        <span class="text-success">Balance: {{ overall_summary.grand_total_balance }} PKR</span>
+                        <span class="text-success">Balance: {{ overall_summary.grand_total_balance|floatformat:2 }} PKR</span>
                     {% else %}
-                        <span class="text-danger">Balance: {{ overall_summary.grand_total_balance }} PKR</span>
+                        <span class="text-danger">Balance: {{ overall_summary.grand_total_balance|floatformat:2 }} PKR</span>
                     {% endif %}
 
                 </div>

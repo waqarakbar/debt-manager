@@ -19,9 +19,9 @@
                     <div class="col-7">
 
                         {% if trns.transaction_type_id == 1 %}
-                            <h5 class="text-success">+{{ trns.amount }}</h5>
+                            <h5 class="text-success">+{{ trns.amount|floatformat:2 }}</h5>
                         {% else %}
-                            <h5 class="text-danger">-{{ trns.amount }}</h5>
+                            <h5 class="text-danger">-{{ trns.amount|floatformat:2 }}</h5>
                         {% endif %}
 
                         <span class="text-small text-muted">
@@ -31,7 +31,20 @@
 
                     <div class="col-5 text-right">
 
-                        {{ trns.transaction_date }}
+                        <h6>
+                            {{ trns.transaction_date|date:'d F, Y' }}
+                        </h6>
+
+
+                        {% if user.is_superuser %}
+                            <a href="{% url 'new-transaction' username=current_user.username transaction_id=trns.id %}" class="btn btn-sm btn-info text-white">
+                                <i class="fa fa-edit"></i>
+                            </a>
+
+                            <a href="#" class="btn btn-sm btn-danger text-white">
+                                <i class="fa fa-trash"></i>
+                            </a>
+                        {% endif %}
 
                     </div>
                 </div>

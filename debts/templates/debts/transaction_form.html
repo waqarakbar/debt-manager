@@ -10,7 +10,7 @@
                 <a href="{% url 'home' %}">Home</a> /
                 <span>
                     New Transaction
-                    {% if transaction_type == 'single' %} "@{{ debtors.username }}" {% else %} "Group" {% endif %}
+                    {% if transaction_mode == 'single' %} "@{{ debtors.username }}" {% else %} "Group" {% endif %}
                 </span>
             </div>
 
@@ -18,12 +18,12 @@
 
                 {% csrf_token %}
 
-                <input type="hidden" name="transaction_type" value="{{ transaction_type }}">
+                <input type="hidden" name="transaction_mode" value="{{ transaction_mode }}">
 
                 {{ form|crispy }}
 
 
-                {% if transaction_type == 'single' %}
+                {% if transaction_mode == 'single' %}
 
                     <div id="div_id_remarks" class="form-group">
                         <label for="id_remarks" class=" requiredField">
@@ -57,7 +57,7 @@
                 </a>
 
                 <button class="btn btn-info text-white" type="submit">
-                    <i class="fa fa-save"></i> Save Member
+                    <i class="fa fa-save"></i> Save Transaction
                 </button>
 
             </form>
