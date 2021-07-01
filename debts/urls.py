@@ -11,5 +11,5 @@ urlpatterns = [
     path('transaction-processor/<str:username>/', transaction_processor, name='new-transaction'),
     path('transaction-processor/', transaction_processor, name='new-transaction'),
 
-    path('text-db/', text_to_db, name='textdb')
+    # path('text-db/', text_to_db, name='textdb')
 ]

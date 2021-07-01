@@ -153,47 +153,61 @@ def transaction_processor(request, username=None, transaction_id=None):
     return render(request, 'debts/transaction_form.html', context)
 
 
-def text_to_db(request):
-    print('working')
-    import os
-    from datetime import datetime
-
-    module_dir = os.path.dirname(__file__)
-    file_path = os.path.join(module_dir, 'static/adil.txt')  # full path to text.
-    data_file = open(file_path, 'r')
-    data = data_file.read()
-    data_list = data.splitlines()
-    # print(data_list)
-    for d in data_list:
-        this_date, amount = d.split(":")
-
-        ## transaction date
-        date_obj = datetime.strptime(this_date, "%d %B %Y")
-
-        amount_striped = amount.strip()
-
-        ## transaction type
-        sign = amount_striped[0]
-
-        if sign == '+':
-            # remove first 3 chars
-            without_unit = amount_striped[3:]
-        else:
-            # remove first 4 chars
-            without_unit = amount_striped[3:]
-        
-        amount_remarks = without_unit.split(" (")
-
-        ## transaction amount
-        transaction_amount = float(amount_remarks[0].replace(",", "").strip())
-
-        comment = "";
-        if len(amount_remarks) > 1:
-            # we also have a transaction comment
-            comment = amount_remarks[1].strip().rstrip(")")
-
-        print("date: ", date_obj, " | type: ", sign, " | amount: ", transaction_amount, " | comment: ", comment)
-
-
-
-    return HttpResponse('done');
+# def text_to_db(request):
+#
+#     import os
+#     from datetime import datetime
+#
+#     module_dir = os.path.dirname(__file__)
+#     file_path = os.path.join(module_dir, 'static/zeeshan.txt')  # full path to text.
+#     debtor_id = 21
+#     data_file = open(file_path, 'r')
+#     data = data_file.read()
+#     data_list = data.splitlines()
+#     # print(data_list)
+#     for d in data_list:
+#         this_date, amount = d.split(":")
+#
+#         ## transaction date
+#         date_obj = datetime.strptime(this_date, "%d %B %Y")
+#
+#         amount_striped = amount.strip()
+#
+#         ## transaction type
+#         sign = amount_striped[0]
+#
+#         if sign == '+':
+#             # remove first 3 chars
+#             without_unit = amount_striped[3:]
+#             ttype = 1
+#         else:
+#             # remove first 4 chars
+#             without_unit = amount_striped[3:]
+#             ttype = 2
+#
+#         amount_remarks = without_unit.split(" (")
+#
+#         ## transaction amount
+#         transaction_amount = float(amount_remarks[0].replace(",", "").strip())
+#
+#         comment = "";
+#         if len(amount_remarks) > 1:
+#             # we also have a transaction comment
+#             comment = amount_remarks[1].strip().rstrip(")")
+#
+#         print("date: ", date_obj, " | type: ", sign, " | amount: ", transaction_amount, " | comment: ", comment)
+#
+#         trx = Transaction(
+#             amount=transaction_amount,
+#             remarks=comment,
+#             transaction_date=date_obj,
+#             created_at=date_obj,
+#             debtor_id=debtor_id,
+#             entered_by_id=1,
+#             transaction_type_id=ttype
+#         )
+#         trx.save()
+#
+#
+#
+#     return HttpResponse('done')
