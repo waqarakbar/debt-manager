@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import home, my_transactions, user_transactions, transaction_processor, text_to_db
+from .views import home, my_transactions, user_transactions, transaction_processor, download_summary_csv
 
 urlpatterns = [
     path('', home, name='home'),
@@ -10,6 +10,8 @@ urlpatterns = [
     path('transaction-processor/<str:username>/<int:transaction_id>/', transaction_processor, name='new-transaction'),
     path('transaction-processor/<str:username>/', transaction_processor, name='new-transaction'),
     path('transaction-processor/', transaction_processor, name='new-transaction'),
+    
+    path('download-summary-csv/', download_summary_csv, name="download-summary-csv")
 
     # path('text-db/', text_to_db, name='textdb')
 ]
