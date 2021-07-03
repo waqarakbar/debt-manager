@@ -8,6 +8,9 @@ from .forms import TransactionModalForm
 from django.contrib import messages
 import csv
 import datetime
+import dropbox
+import os
+from django.conf import settings
 
 
 # check if a given user is super_user
@@ -155,6 +158,8 @@ def transaction_processor(request, username=None, transaction_id=None):
     return render(request, 'debts/transaction_form.html', context)
 
 
+@login_required
+@user_passes_test(_super_user_test, login_url='my-transactions/')
 def download_summary_csv(request):
     # get the debtors group
     debtor_group = Group.objects.get(pk=1)
@@ -187,6 +192,62 @@ def download_summary_csv(request):
         ])
 
     return response
+
+
+@login_required
+@user_passes_test(_super_user_test, login_url='my-transactions/')
+def sync_to_dropbox(request):
+
+    access_token = settings.DBX_ACCESS_TOKEN
+
+    # get debts summary
+    debtor_group = Group.objects.get(pk=1)
+    debtors = debtor_group.user_set.annotate(
+        total_lent=Coalesce(Sum('transaction__amount', filter=Q(transaction__transaction_type_id=1)), 0,
+                            output_field=FloatField()),
+        total_received=Coalesce(Sum('transaction__amount', filter=Q(transaction__transaction_type_id=2)), 0,
+                                output_field=FloatField()),
+        total_balance=Coalesce(Sum('transaction__amount', filter=Q(transaction__transaction_type_id=1)), 0,
+                               output_field=FloatField()) -
+                      Coalesce(Sum('transaction__amount', filter=Q(transaction__transaction_type_id=2)), 0,
+                               output_field=FloatField())
+    ).order_by('first_name')
+
+    # create a unique dated file name to be saved to dropbox
+    date_now = datetime.datetime.now()
+    filename = 'summary_' + date_now.strftime("%Y-%m-%d %H-%M-%S %f") + ".csv"
+    full_path = os.path.join('media/'+filename)
+
+    row_list = []
+    row_list.append(['Name', 'Total Lent', 'Total Recovered', 'Balance'])
+    for debtor in debtors:
+        row_list.append([
+            debtor.first_name + " " + debtor.last_name + " @" + debtor.username,
+            round(debtor.total_lent, 2),
+            round(debtor.total_received, 2),
+            round(debtor.total_balance, 2)
+        ])
+
+    # save csv file to media
+    with open(full_path, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(row_list)
+
+
+    # open file, save to dropbox and then delete it form media
+    dbx = dropbox.Dropbox(access_token)
+    with open(full_path, "rb") as f:
+        try:
+            dbx.files_upload(f.read(), '/'+filename, mute=True)
+            os.remove(full_path)
+            messages.success(request, 'Sync to dropbox')
+        except:
+            messages.error(request, 'Dropbox sync failed')
+
+    return redirect('home')
+
+
+
 
 
 # def text_to_db(request):
