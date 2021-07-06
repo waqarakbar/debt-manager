@@ -216,7 +216,7 @@ def sync_to_dropbox(request):
     # create a unique dated file name to be saved to dropbox
     date_now = datetime.datetime.now()
     filename = settings.IS_DUMMY+'summary_' + date_now.strftime("%Y-%m-%d %H-%M-%S %f") + ".csv"
-    full_path = os.path.join(settings.MEDIA_ROOT+filename)
+    full_path = os.path.join(settings.MEDIA_ROOT+"/"+filename)
 
     row_list = []
     row_list.append(['Name', 'Total Lent', 'Total Recovered', 'Balance'])
