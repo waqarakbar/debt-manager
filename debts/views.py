@@ -114,7 +114,7 @@ def transaction_processor(request, username=None, transaction_id=None):
     if username is None:
         # get all the debtors for group transaction
         debtor_group = Group.objects.get(pk=1)
-        debtors = debtor_group.user_set.all()
+        debtors = debtor_group.user_set.order_by('first_name').all()
         transaction_mode = 'group'
     else:
         # single user transaction
